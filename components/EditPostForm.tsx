@@ -1,6 +1,6 @@
 'use client';
 
-import { TCategory } from "@/app/types";
+import { TCategory, TPost } from "@/app/types";
 import Link from "next/link";
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation";
@@ -9,7 +9,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 
 
-const CreatePostForm = () => {
+const EditPostForm = ({post}: {post: TPost}) => {
   const [links, setLinks] = useState<string[]>([]);
   const [linkInput, setLinkInput] = useState("")
   const [title, setTitle] = useState("")
@@ -29,25 +29,25 @@ const CreatePostForm = () => {
       setCategories(catNames)
     }
     fetchAllCategories()
-  },[])
+
+    const initValues = () =>{
+        setTitle(post.title)
+        setContent(post.content)
+        setImageUrl(post.imageUrl || '')
+        setPublicId(post.publicId || '')
+        setSelectedCategory(post.catName || '')
+        setLinks(post.links || [])
+    }
+    console.log(post)
+
+    initValues()
+  },[post.title, post.content, post.imageUrl, post.publicId, post.catName, post.links])
 
   const addLink = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     e.preventDefault();
     if(linkInput.trim() !== ""){
       setLinks((prev) => [...prev,linkInput])
       setLinkInput("")
-    }
-  }
-
-  const handleImageUpload = (result: CloudinaryUploadWidgetResults) => {
-    const info = result.info as object;
-
-    if('secure_url' in info && 'public_id' in info){
-      const url = info.secure_url as string;
-      const public_id = info.public_id as string;
-
-      setImageUrl(url)
-      setPublicId(public_id)
     }
   }
 
@@ -59,7 +59,7 @@ const CreatePostForm = () => {
     e.preventDefault();
 
     try {
-      const res = await fetch('api/removeImage', {
+      const res = await fetch('/api/removeImage', {
         method:"POST",
         headers:{
           "Content-Type" : "application/json"
@@ -78,18 +78,29 @@ const CreatePostForm = () => {
     
   }
 
+  const handleImageUpload = (result: CloudinaryUploadWidgetResults) => {
+    const info = result.info as object;
+
+    if('secure_url' in info && 'public_id' in info){
+      const url = info.secure_url as string;
+      const public_id = info.public_id as string;
+
+      setImageUrl(url)
+      setPublicId(public_id)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if(!title || !content){
-      const errorMessage = "Title and content are required"
-      toast.error(errorMessage)
+      toast.error("Title and content are required")
       return 
     }
 
     try {
-      const res = await fetch('api/posts/', {
-        method: "POST",
+      const res = await fetch(`/api/posts/${post.id}`, {
+        method: "PUT",
         headers: {
           "Content-type":"application/json"
         },
@@ -99,13 +110,13 @@ const CreatePostForm = () => {
       })
 
       if(res.ok){
-        toast.success("Post created successfully")
+        toast.success("Post edited successfully")
         router.push('/dashboard')
-      }else{
-        toast.error("Something went wrong")
       }
     } catch (error) {
+      toast.error("Something went wrong")
       console.log(error)
+      
     }
   }
 
@@ -115,8 +126,8 @@ const CreatePostForm = () => {
         Create post
       </h2>
       <form onSubmit={handleSubmit} className="flex flex-col gap-2">
-        <input onChange={(e) => setTitle(e.target.value)} type="text" placeholder="Title"/>
-        <textarea onChange={(e) => setContent(e.target.value)} placeholder="Content"></textarea>
+        <input value={title} onChange={(e) => setTitle(e.target.value)} type="text" placeholder="Title"/>
+        <textarea value={content} onChange={(e) => setContent(e.target.value)} placeholder="Content"></textarea>
         {links &&
           links.map((link,i) => (
           <div key={i} className="flex items-center gap-4">
@@ -163,7 +174,8 @@ const CreatePostForm = () => {
 
         {publicId && <button onClick={removeImage} className="py-2 px-4 rounded-md font-bold w-fit bg-red-600 text-white mb-4">Remove Image</button>}
 
-        <select onChange={(e)=> setSelectedCategory(e.target.value)} className="p-3 rounded-md border appearance-none">
+
+        <select value={selectedCategory} onChange={(e)=> setSelectedCategory(e.target.value)} className="p-3 rounded-md border appearance-none">
           <option value="">Select A Category</option>
           {
             categories && categories.map((category) => (<option key={category.id} value={category.catName}>{category.catName}</option>))
@@ -171,10 +183,10 @@ const CreatePostForm = () => {
           
         </select>
 
-        <button className="primary-btn" type="submit"> Create Post</button>
+        <button className="primary-btn" type="submit"> Update Post</button>
       </form>
     </div>
   )
 }
 
-export default CreatePostForm
+export default EditPostForm

@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { NextAuthProvier } from "@/components/Providers";
+import { Toaster } from "react-hot-toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -28,6 +29,7 @@ export default function RootLayout({
             </div>
             <Footer/>
           </div>
+          <Toaster/>
         </NextAuthProvier>
       </body>
     </html>
