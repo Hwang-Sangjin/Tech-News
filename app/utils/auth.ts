@@ -3,9 +3,11 @@ import GoogleProvider from "next-auth/providers/google";
 import type { NextAuthOptions } from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import prisma from "@/lib/prismadb";
+import { PrismaClient } from '@prisma/client'
 
-export const authOptions = {
+const prisma = new PrismaClient()
+
+export const authOptions : NextAuthOptions = {
     adapter: <Adapter> PrismaAdapter(prisma),
   
       pages: {
@@ -22,7 +24,7 @@ export const authOptions = {
           clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
         }),
       ],
-} satisfies NextAuthOptions
+}
 
 
 // import NextAuth, {  NextAuthOptions } from "next-auth";
@@ -30,7 +32,7 @@ export const authOptions = {
 
 // import { PrismaAdapter } from "@auth/prisma-adapter";
 
-// import { PrismaClient } from '@prisma/client'
+// 
 // import { Adapter } from "next-auth/adapters";
 
 // const prisma = new PrismaClient()
