@@ -33,7 +33,7 @@ export default function Navbar() {
             <Link href={"/"}>
                 <h1 className="text-dark text-4xl font-bold tracking-tighter">Tech News</h1>
             </Link>
-            <p className="text-sm">Exploring Tomorrow's Innovations, <br/> One Byte at a Time</p>
+            <p className="text-sm">Exploring Tomorrow&apos;s Innovations, <br/> One Byte at a Time</p>
         </div>
 
         {status==='authenticated'? 
