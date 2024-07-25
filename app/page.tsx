@@ -1,10 +1,10 @@
 import CategoriesList from "@/components/CategoriesList"
 import Post from "@/components/Post";
 import { TPost } from "./types";
-
+export const dynamic = 'force-dynamic';
 const getPosts = async ():Promise<TPost[] | null> => {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/posts`)
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/posts`,{cache: "no-store"})
     
     if(res.ok){
       const posts = await res.json();

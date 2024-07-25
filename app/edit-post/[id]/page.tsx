@@ -3,10 +3,10 @@ import { authOptions } from "@/app/utils/auth";
 import EditPostForm from "@/components/EditPostForm";
 import { getServerSession } from "next-auth/next";
 import { redirect } from "next/navigation";
-
+export const dynamic = 'force-dynamic';
 const getPost = async (id: string): Promise<TPost | null> => {
   try {
-    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/posts/${id}`,);
+    const res = await fetch(`${process.env.NEXTAUTH_URL}/api/posts/${id}`,{cache: "no-store"});
 
     if (res.ok) {
       const post = await res.json();
